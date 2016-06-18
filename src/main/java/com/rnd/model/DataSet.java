@@ -7,7 +7,6 @@ import com.rnd.model.enumerations.ModelAspect;
 import com.rnd.model.enumerations.Source;
 import lombok.Data;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class DataSet {
 
     private boolean structured;
 
-    private Collection<ModelAspect> aspect;
+    private List<ModelAspect> aspect;
 
     private String validationInfo;
 

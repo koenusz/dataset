@@ -15,7 +15,10 @@ import com.vaadin.ui.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class DataSetEditor extends CustomComponent {
 
@@ -26,10 +29,15 @@ public class DataSetEditor extends CustomComponent {
     private BeanFieldGroup<DataSet> binder = new BeanFieldGroup(DataSet.class);
     private VerticalLayout root = new VerticalLayout();
     private HorizontalLayout dataForms = new HorizontalLayout();
-    private HorizontalLayout buttonBar = new HorizontalLayout();
+    private VerticalLayout buttonBar = new VerticalLayout();
+
     private FormLayout leftForm = new FormLayout();
     private FormLayout middleForm = new FormLayout();
-    private FormLayout rightForm = new FormLayout();
+    private VerticalLayout aspectContainer = new VerticalLayout();
+    private VerticalLayout keyContainer = new VerticalLayout();
+    private VerticalLayout tagContainer = new VerticalLayout();
+
+
     @PropertyId("operator")
     private TextField operator = new TextField("Operator");
     @PropertyId("dateChecked")
@@ -64,10 +72,11 @@ public class DataSetEditor extends CustomComponent {
 
 
     private Button save = new Button("Save");
-    private Button test = new Button("Load test");
+    private Button clearAll = new Button("Clear");
 
     public DataSetEditor() {
         this.setId(this.getClass().getSimpleName());
+        initDataSet();
         init();
     }
 
@@ -76,8 +85,13 @@ public class DataSetEditor extends CustomComponent {
         init();
     }
 
-    private void init() {
+    void clearData() {
+        this.dataSet = new DataSet();
         initDataSet();
+        init();
+    }
+
+    private void init() {
         instantiateTextFields();
         initializeSelectors();
         renderFormComponents();
@@ -108,20 +122,23 @@ public class DataSetEditor extends CustomComponent {
         middleForm.addComponent(validationInfo);
         middleForm.addComponent(applicability);
 
-        rightForm.addComponent(aspects);
-        rightForm.addComponent(keys);
-        rightForm.addComponent(tags);
+        aspectContainer.addComponent(aspects);
+        keyContainer.addComponent(keys);
+        tagContainer.addComponent(tags);
 
+        dataForms.addComponent(buttonBar);
         dataForms.addComponent(leftForm);
         dataForms.addComponent(middleForm);
-        dataForms.addComponent(rightForm);
+        dataForms.addComponent(aspectContainer);
+        dataForms.addComponent(keyContainer);
+        dataForms.addComponent(tagContainer);
 
 
+        buttonBar.addComponent(clearAll);
         buttonBar.addComponent(save);
-        buttonBar.addComponent(test);
+        buttonBar.setMargin(true);
 
         root.addComponent(dataForms);
-        root.addComponent(buttonBar);
         setCompositionRoot(root);
 
 
@@ -132,17 +149,22 @@ public class DataSetEditor extends CustomComponent {
             log.debug("saving");
             try {
                 binder.commit();
+                commitAspects();
                 handler.saveDataSet(dataSet);
             } catch (FieldGroup.CommitException e) {
                 e.printStackTrace();
             }
 
         });
+        clearAll.addClickListener(c -> this.clearData());
 
-        //FIXME: remove testing code
-        test.addClickListener(c ->
-                handler.loadAll().forEach(d -> leftForm.addComponent(new Label("loaded: " + d.getName())))
-        );
+
+    }
+
+    private void commitAspects() {
+        List selectedAspects = new ArrayList();
+        selectedAspects.addAll((Collection) aspects.getValue());
+        dataSet.setAspect(selectedAspects);
     }
 
     private void instantiateTextFields() {
@@ -170,8 +192,12 @@ public class DataSetEditor extends CustomComponent {
             source.setItemCaption(sourceEnum, sourceEnum.getValue());
             source.setFilteringMode(FilteringMode.STARTSWITH);
         }
+        aspects.setValue(null);
         for (ModelAspect aspect : ModelAspect.values()) {
             aspects.addItem(aspect);
+            if (dataSet.getAspect() != null && dataSet.getAspect().contains(aspect.toString())) {
+                aspects.select(aspect);
+            }
         }
 
     }

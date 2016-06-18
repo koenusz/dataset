@@ -8,7 +8,10 @@ import com.vaadin.annotations.Push;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
-import com.vaadin.ui.*;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 import java.io.File;
 
@@ -43,8 +46,12 @@ public class DataSetUI extends UI {
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         FileResource resource = new FileResource(new File(basepath + "/images/rnd.png"));
 
+
         // Show the image in the application
         Image image = new Image("", resource);
+        image.setHeight(59, Unit.PIXELS);
+        image.setWidth(96, Unit.PIXELS);
+
         header.addComponent(image);
         header.setId("header");
         //TODO: get styles to work
@@ -52,8 +59,8 @@ public class DataSetUI extends UI {
 
 
         //FIXME: put something usefull in
-        leftMenu.setMargin(true);
-        leftMenu.addComponent(new Button("Buttons go here"));
+        // leftMenu.setMargin(true);
+        // leftMenu.addComponent(new Button("Buttons go here"));
 
 
         contends.addComponent(injector.getInstance(DataSetOverview.class));
