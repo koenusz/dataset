@@ -9,6 +9,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OLiveQuery;
 import com.orientechnologies.orient.core.sql.query.OLiveResultListener;
 import com.rnd.model.DataSet;
+import com.rnd.model.enumerations.Key;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,20 @@ public class DocumentHandler {
         try (ODatabaseDocumentTx db = pool.acquire()) {
             db.browseClass(DataSet.class.getSimpleName()).forEach(d -> log.debug("logall: {}", d.fieldNames()));
         }
+    }
+
+    public List<Key> getKeys() {
+        List<Key> keys = new ArrayList<>();
+        try (ODatabaseDocumentTx db = pool.acquire()) {
+            for (ODocument keyDoc : db.browseClass(Key.class.getSimpleName())) {
+                Key key = new Key();
+                key.setName(keyDoc.field("name"));
+                key.setType(keyDoc.field("type"));
+                key.setRelated(keyDoc.field("related"));
+                keys.add(key);
+            }
+        }
+        return keys;
     }
 
 

@@ -13,6 +13,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tepi.filtertable.FilterTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class DataSetOverview extends CustomComponent implements OLiveResultListe
 
     HorizontalLayout layout = new HorizontalLayout();
     private Logger log = LoggerFactory.getLogger(DataSetOverview.class);
-    private Table table = new Table("DataSet");
+    private FilterTable table = new FilterTable("DataSet");
     private BeanFieldGroup<DataSet> binder = new BeanFieldGroup(DataSet.class);
 
     private VerticalLayout buttonBar = new VerticalLayout();
@@ -74,7 +75,7 @@ public class DataSetOverview extends CustomComponent implements OLiveResultListe
 
         BeanItemContainer<DataSet> container = new BeanItemContainer<>(DataSet.class, datasets);
         table.setContainerDataSource(container);
-
+        table.setFilterBarVisible(true);
         java.lang.reflect.Field[] declaredFields = DataSet.class.getDeclaredFields();
 
         List<String> columns = new ArrayList<>();

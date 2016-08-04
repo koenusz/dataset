@@ -11,5 +11,5 @@ public class Key {
     private String name;
     private List<Key> related;
 
-    enum Type {PRIVITE, FOREIGN, UNIQUE}
+    public enum Type {PRIVATE, FOREIGN, UNIQUE}
 }

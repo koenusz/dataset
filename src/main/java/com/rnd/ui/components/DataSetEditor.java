@@ -4,11 +4,14 @@ package com.rnd.ui.components;
 import com.google.inject.Inject;
 import com.rnd.db.DocumentHandler;
 import com.rnd.model.DataSet;
+import com.rnd.model.Tag;
+import com.rnd.model.enumerations.Key;
 import com.rnd.model.enumerations.ModelAspect;
 import com.rnd.model.enumerations.Source;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.NullValidator;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
@@ -26,7 +29,7 @@ public class DataSetEditor extends CustomComponent {
     @Inject
     private DocumentHandler handler;
     private DataSet dataSet;
-    private BeanFieldGroup<DataSet> binder = new BeanFieldGroup(DataSet.class);
+    private BeanFieldGroup<DataSet> binder = new BeanFieldGroup<>(DataSet.class);
     private VerticalLayout root = new VerticalLayout();
     private HorizontalLayout dataForms = new HorizontalLayout();
     private VerticalLayout buttonBar = new VerticalLayout();
@@ -57,18 +60,21 @@ public class DataSetEditor extends CustomComponent {
     private TextField neutral = new TextField("Neutral");
     @PropertyId("structured")
     private CheckBox structured = new CheckBox("Structured");
-    //@PropertyId("aspects")
-    private TwinColSelect aspects = new TwinColSelect("Aspects");
+
+    private TwinColSelect aspectSelect = new TwinColSelect("Aspects");
     @PropertyId("validationInfo")
     private TextField validationInfo = new TextField("Validation Information");
     @PropertyId("applicability")
     private TextField applicability = new TextField("Applicability");
     @PropertyId("description")
     private TextArea description = new TextArea("Description");
-    // @PropertyId("keys")
-    private TwinColSelect keys = new TwinColSelect("Keys");
-    // @PropertyId("tags")
-    private TwinColSelect tags = new TwinColSelect("Tags");
+
+
+    private TextField keyName = new TextField("New Key");
+    private Button addKeyButton = new Button("Add");
+    private TwinColSelect keySelect = new TwinColSelect("Keys");
+    private TextField newTag = new TextField("New Tag");
+    private TwinColSelect tagSelect = new TwinColSelect("Tags");
 
 
     private Button save = new Button("Save");
@@ -85,11 +91,12 @@ public class DataSetEditor extends CustomComponent {
         init();
     }
 
-    void clearData() {
+    private void clearData() {
         this.dataSet = new DataSet();
         initDataSet();
         init();
     }
+
 
     private void init() {
         instantiateTextFields();
@@ -122,9 +129,12 @@ public class DataSetEditor extends CustomComponent {
         middleForm.addComponent(validationInfo);
         middleForm.addComponent(applicability);
 
-        aspectContainer.addComponent(aspects);
-        keyContainer.addComponent(keys);
-        tagContainer.addComponent(tags);
+        aspectContainer.addComponent(aspectSelect);
+        keyContainer.addComponent(keyName);
+        keyContainer.addComponent(addKeyButton);
+        keyContainer.addComponent(keySelect);
+        tagContainer.addComponent(newTag);
+        tagContainer.addComponent(tagSelect);
 
         dataForms.addComponent(buttonBar);
         dataForms.addComponent(leftForm);
@@ -150,6 +160,8 @@ public class DataSetEditor extends CustomComponent {
             try {
                 binder.commit();
                 commitAspects();
+                commitKeys();
+                commitTags();
                 handler.saveDataSet(dataSet);
             } catch (FieldGroup.CommitException e) {
                 e.printStackTrace();
@@ -157,14 +169,38 @@ public class DataSetEditor extends CustomComponent {
 
         });
         clearAll.addClickListener(c -> this.clearData());
+        addKeyButton.addClickListener(c -> addNewKey());
+    }
 
+    private void addNewKey() {
+        String keyName = this.keyName.getValue();
+        if (keyName.isEmpty()) {
+            Notification.show("NO keyName", "Give the key a name.", Notification.Type.WARNING_MESSAGE);
+            return;
+        }
 
+        Key key = new Key();
+        key.setName(keyName);
+        keySelect.addItem(key);
+        keySelect.select(key);
     }
 
     private void commitAspects() {
-        List selectedAspects = new ArrayList();
-        selectedAspects.addAll((Collection) aspects.getValue());
+        List<ModelAspect> selectedAspects = new ArrayList<>();
+        selectedAspects.addAll((Collection<? extends ModelAspect>) aspectSelect.getValue());
         dataSet.setAspect(selectedAspects);
+    }
+
+    private void commitKeys() {
+        List<Key> selectedKeys = new ArrayList<>();
+        selectedKeys.addAll((Collection) keySelect.getValue());
+        dataSet.setKeys(selectedKeys);
+    }
+
+    private void commitTags() {
+        List<Tag> selectedTags = new ArrayList<>();
+        selectedTags.addAll((Collection) tagSelect.getValue());
+        dataSet.setTags(selectedTags);
     }
 
     private void instantiateTextFields() {
@@ -180,6 +216,8 @@ public class DataSetEditor extends CustomComponent {
         validationInfo.setNullRepresentation("");
         applicability.setNullRepresentation("");
         description.setNullRepresentation("");
+        newTag.setNullRepresentation("");
+        keyName.setNullRepresentation("");
 
         //field.setIcon(FontAwesome.DATABASE);
 
@@ -192,13 +230,27 @@ public class DataSetEditor extends CustomComponent {
             source.setItemCaption(sourceEnum, sourceEnum.getValue());
             source.setFilteringMode(FilteringMode.STARTSWITH);
         }
-        aspects.setValue(null);
+        aspectSelect.setValue(null);
         for (ModelAspect aspect : ModelAspect.values()) {
-            aspects.addItem(aspect);
+            aspectSelect.addItem(aspect);
             if (dataSet.getAspect() != null && dataSet.getAspect().contains(aspect.toString())) {
-                aspects.select(aspect);
+                aspectSelect.select(aspect);
             }
         }
+        keySelect.setValue(null);
+        keySelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+        keySelect.setItemCaptionPropertyId("name");
+        //FIXME add a typelistener to get postconstruct functionality.
+        if (handler != null) {
+            BeanItemContainer<Key> container = new BeanItemContainer<>(Key.class);
+            keySelect.setContainerDataSource(container);
+            for (Key key : handler.getKeys()) {
+                container.addItem(key);
+                if (dataSet.getAspect() != null && dataSet.getAspect().contains(key.toString())) {
+                    keySelect.select(key);
+                }
+            }
 
+        }
     }
 }

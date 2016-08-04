@@ -39,6 +39,7 @@
 
     <dependencyManagement>
         <dependencies>
+
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
@@ -81,6 +82,11 @@
             <artifactId>vaadin-client</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>filteringtable</artifactId>
+            <version>0.9.15.v7</version>
+        </dependency>
         <!--
           Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
 
@@ -88,13 +94,13 @@
           compilation classpath by vaadin-maven-plugin so normally there is no need for an
           explicit dependency.
         -->
-        <!--
+        <!--     -->
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-client-compiler</artifactId>
             <scope>provided</scope>
         </dependency>
-        -->
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-themes</artifactId>
