@@ -76,7 +76,7 @@ public class DocumentHandler {
                 Key key = new Key();
                 key.setName(keyDoc.field("name"));
                 key.setType(keyDoc.field("type"));
-                key.setRelated(keyDoc.field("related"));
+                //key.setRelated(keyDoc.field("related"));
                 keys.add(key);
             }
         }

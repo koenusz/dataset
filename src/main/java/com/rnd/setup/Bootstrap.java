@@ -18,6 +18,6 @@ public class Bootstrap extends GuiceServletContextListener {
                 serve("/*").with(DataSetServlet.class);
 
             }
-        }, new OrientDBModule("plocal:dataset", "admin", "admin"));
+        }, new OrientDBModule("remote:192.168.99.100:32769/dataset", "admin", "admin"));
     }
 }

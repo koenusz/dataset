@@ -10,8 +10,8 @@
     <name>dataset</name>
 
     <properties>
-        <vaadin.version>7.6.6</vaadin.version>
-        <orientdb.version>2.2.0</orientdb.version>
+        <vaadin.version>7.6.8</vaadin.version>
+        <orientdb.version>2.2.7</orientdb.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
         <jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -233,6 +233,8 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.plugin.version}</version>
                 <configuration>
+                    <stopKey></stopKey>
+                    <stopPort></stopPort>
                     <scanIntervalSeconds>2</scanIntervalSeconds>
                 </configuration>
             </plugin>

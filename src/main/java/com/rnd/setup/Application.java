@@ -10,11 +10,10 @@ public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private final static String LOCALURL = "plocal:dataset";
+    private final static String DOCKERURL = "remote:192.168.99.100:32769/dataset";
     private static Injector sInjector;
     @Inject
     private Injector injector;
-
-    //private final static String DOCKERURL = "remote:192.168.99.100:32773/dataset";
 
     public static void main(String... args) {
         /*
@@ -22,7 +21,7 @@ public class Application {
 		 * instance. Most applications will call this method exactly once, in
 		 * their main() method.
 		 */
-        sInjector = Guice.createInjector(new OrientDBModule(LOCALURL, "admin", "admin"));
+        sInjector = Guice.createInjector(new OrientDBModule(DOCKERURL, "admin", "admin"));
 
         Application a = sInjector.getInstance(Application.class);
 

@@ -4,16 +4,18 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OrientDBModule extends AbstractModule {
 
-    // private static final Logger logger =
-    // LoggerFactory.getLogger(OrientDBModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrientDBModule.class);
 
     private final OPartitionedDatabasePool pool;
 
     public OrientDBModule(String url, String userName, String password) {
         super();
+        logger.debug(url);
         pool = new OPartitionedDatabasePool(url, userName, password);
         pool.setAutoCreate(true);
     }
