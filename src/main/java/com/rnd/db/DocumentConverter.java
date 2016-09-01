@@ -72,7 +72,7 @@ public class DocumentConverter {
                         ParameterizedType listType = (ParameterizedType) declaredField.getGenericType();
                         //this only works if the list has only objects of the same type.
                         Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-                        if (needsConverterType(listClass)) {
+                        if (isSingleValue(listClass)) {
                             //TODO add support for other collection types
                             value = convertList((List<?>) value);
                         }
@@ -100,7 +100,7 @@ public class DocumentConverter {
     }
 
 
-    private static boolean needsConverterType(Class<?> clazz) {
+    public static boolean isSingleValue(Class<?> clazz) {
 
         return !ClassUtils.isPrimitiveOrWrapper(clazz) && !clazz.equals(String.class) && !clazz.isEnum();
     }

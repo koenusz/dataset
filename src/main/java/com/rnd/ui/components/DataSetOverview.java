@@ -7,7 +7,6 @@ import com.orientechnologies.orient.core.sql.query.OLiveResultListener;
 import com.rnd.db.DocumentHandler;
 import com.rnd.model.DataSet;
 import com.rnd.ui.util.VaadinUtils;
-import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.*;
@@ -20,10 +19,12 @@ import java.util.List;
 
 public class DataSetOverview extends CustomComponent implements OLiveResultListener {
 
+    String KEY_PROPERTY = "Keys";
+
     HorizontalLayout layout = new HorizontalLayout();
     private Logger log = LoggerFactory.getLogger(DataSetOverview.class);
     private FilterTable table = new FilterTable("DataSet");
-    private BeanFieldGroup<DataSet> binder = new BeanFieldGroup(DataSet.class);
+    ;
 
     private VerticalLayout buttonBar = new VerticalLayout();
     private Button deleteButton = new Button("Delete");
@@ -91,6 +92,7 @@ public class DataSetOverview extends CustomComponent implements OLiveResultListe
         table.setColumnHeaders(columns.toArray(new String[columns.size()]));
         table.sort(new Object[]{"id"}, new boolean[]{
                 true, true});
+        table.addGeneratedColumn("keys", new KeyColumnGenerator());
     }
 
 
